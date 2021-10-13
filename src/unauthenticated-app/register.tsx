@@ -1,15 +1,15 @@
-import React, { FormEvent } from 'react';
+import React from 'react';
 import { Form, Input } from 'antd';
 import { useAuth } from '../context/auth-context';
 import { LongButton } from '.';
 
 export const RegisterScreen = () => {
 
-    const { register, user } = useAuth()
+    const { register } = useAuth()
 
 
     // HTMLFormElement extends Element
-    const handleSubmit = (values:{username:string,password:string}) => {
+    const handleSubmit = (values: { username: string, password: string }) => {
         register(values);
     }
 

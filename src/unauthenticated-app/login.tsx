@@ -1,11 +1,11 @@
-import React, { FormEvent } from 'react';
+import React from 'react';
 import { useAuth } from '../context/auth-context';
 import { Form, Input } from 'antd';
 import { LongButton } from '.'
 
 export const LoginScreen = () => {
 
-    const { login, user } = useAuth()
+    const { login } = useAuth()
 
 
     // HTMLFormElement extends Element
