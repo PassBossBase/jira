@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { LoginScreen } from "./login";
 import { RegisterScreen } from "./register";
-import { Card, Divider,Button } from "_antd@4.16.13@antd";
+import { Card, Divider, Button, Typography } from "_antd@4.16.13@antd";
 import styled from '@emotion/styled';
 import logo from '../assets/logo.svg';
 import left from '../assets/left.svg';
@@ -12,19 +12,21 @@ export const UnauthenticatedApp = () => {
 
     // 定义一个状态用于在login和register中进行切换
     const [isRegister, setIsRegister] = useState(false)
+    const [error, setError] = useState<Error | null>(null)
 
     // 条件判断默认情况显示登陆界面
     return <Container>
-        <Header/>
-        <Background/>
+        <Header />
+        <Background />
         <ShadowCard>
             <Title>
-                {isRegister?'请注册':'请登录'}
+                {isRegister ? '请注册' : '请登录'}
             </Title>
-            {isRegister ? <RegisterScreen /> : <LoginScreen />}
+            {error? <Typography.Text>{error.message}</Typography.Text>:null}
+            {isRegister ? <RegisterScreen onError={setError} /> : <LoginScreen onError={setError} />}
             <Divider />
             <Button onClick={() => setIsRegister(!isRegister)}>
-                {isRegister ? '已经有账号了？ 直接登录' : '没有账号？ 注册新账号' }
+                {isRegister ? '已经有账号了？ 直接登录' : '没有账号？ 注册新账号'}
             </Button>
         </ShadowCard>
     </Container>

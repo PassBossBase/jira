@@ -3,6 +3,8 @@ import { User } from '../screens/project-list/search-panel';
 import * as auth from '../auth_provider'
 import { http } from '../utils/http';
 import { useMount } from '../utils';
+import { useAsync } from '../utils/use-async';
+import { FullPageErrorFallback, FullPageLoading } from '../components/lib';
 
 // 创建全局容器context的方法返回一个全局对象
 const AuthContext = React.createContext<{
@@ -19,39 +21,53 @@ interface AuthForm {
     password: string
 }
 // 初始化user,通过token获取user
-const bootstrapUser = async() =>{
-    let user =  null;
+const bootstrapUser = async () => {
+    let user = null;
     const token = auth.getToken();
-    if(token){
-         const data = await http('me',{token})
-         user = data.user
+    if (token) {
+        const data = await http('me', { token })
+        user = data.user
     }
     return user
 }
 
 
 // 提供用户操作的容器
-export const AuthProvider = ({children}:{children:ReactNode}) => {
-    const [user, setUser] = useState<User | null>(null)
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+
+    const { data: user, error, isLoading, isIdle, isError, run, setData: setUser } = useAsync<User | null>()
+
     //point free                       // user=>setUser(user)  等同 setUser
     const login = (form: AuthForm) => auth.login(form).then(setUser)
     const register = (form: AuthForm) => auth.register(form).then(setUser)
     const logout = () => auth.logout().then(() => setUser(null))
 
-    useMount(()=>{
-        bootstrapUser().then(setUser)
+    useMount(() => {
+        run(bootstrapUser())
     })
 
-    return <AuthContext.Provider children={children} value={{ user, login, register, logout }}/>
+    if(isIdle || isLoading){
+        return <FullPageLoading/>
+    }
+
+    if(isError){
+        return <FullPageErrorFallback error={error} />
+    }
+    return (
+        <AuthContext.Provider 
+        children={children}
+        value={{user,login,register,logout}}
+        />
+    )
 
 }
 
 // 自定义hook
 
-export const useAuth =() =>{
+export const useAuth = () => {
     const context = React.useContext(AuthContext)
 
-    if(!context){
+    if (!context) {
         throw new Error('useAuth 必须在AuthProvider 中使用')
     }
     return context

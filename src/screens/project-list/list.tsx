@@ -1,9 +1,10 @@
 import React from 'react';
 import { User } from './search-panel';
 import { Table } from 'antd';
+import { TableProps } from '_antd@4.16.13@antd/lib/table';
 import dayjs from 'dayjs'
 
-interface Project {
+export interface Project {
     id: string;
     name: string;
     personId: string;
@@ -12,16 +13,15 @@ interface Project {
     created: number;
 }
 
-interface ListProps {
-    list: Project[],
-    users: User[]
+interface ListProps extends TableProps<Project> {
+    users:User[]
 }
 
 
-export const List = ({ list, users }: ListProps) => {
+export const List = ({ users,...props }: ListProps) => {
     // console.log('users',users);
     // console.log('list',list);
-    return <Table
+    return <Table 
         pagination={false}
         columns={[
             // a.name.localeCompare(b.name)可以排序中文字符
@@ -43,7 +43,6 @@ export const List = ({ list, users }: ListProps) => {
                 }
             }
         ]}
-        dataSource={list}
-
+    {...props}
     />
 }
